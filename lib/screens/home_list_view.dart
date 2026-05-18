@@ -61,7 +61,10 @@ class _HomeListViewState extends State<HomeListView> {
                 hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
                 filled: true,
                 fillColor: const Color(0xFFF3F3F3),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
@@ -124,10 +127,19 @@ class _DiaryCard extends StatelessWidget {
   const _DiaryCard({required this.entry, required this.onTap});
 
   static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
-
   @override
   Widget build(BuildContext context) {
     final d = entry.entryDate;
@@ -138,14 +150,15 @@ class _DiaryCard extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        height: 180, // Taller card height
+        height: 180,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade200, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              // FIX: Replaced deprecated withOpacity with withValues
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -154,7 +167,6 @@ class _DiaryCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Left-Side Metadata Column (Padded)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: SizedBox(
@@ -205,10 +217,11 @@ class _DiaryCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Unobstructed Viewport Image touching edges
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.horizontal(right: Radius.circular(15)),
+                borderRadius: const BorderRadius.horizontal(
+                  right: Radius.circular(15),
+                ),
                 child: entry.isImageHeader && entry.displayImage != null
                     ? _coverImage(entry.displayImage!)
                     : Container(
@@ -237,9 +250,19 @@ class _DiaryCard extends StatelessWidget {
   Widget _coverImage(String path) {
     Widget img;
     if (entry.localImagePath != null && !kIsWeb) {
-      img = Image.file(File(path), fit: BoxFit.cover, width: double.infinity, height: double.infinity);
+      img = Image.file(
+        File(path),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
     } else {
-      img = Image.network(path, fit: BoxFit.cover, width: double.infinity, height: double.infinity);
+      img = Image.network(
+        path,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
     }
 
     final scale = _headerImageScale();

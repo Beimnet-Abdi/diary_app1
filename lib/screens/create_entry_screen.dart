@@ -31,7 +31,18 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
   static const _accent = Color(0xFF6B5B7A);
   static const _minElementSize = 24.0;
 
-  static const _moodEmojis = ['☀️', '☁️', '🌧️', '🥰', '😭', '😊', '🌙', '⭐', '😢', '🔥'];
+  static const _moodEmojis = [
+    '☀️',
+    '☁️',
+    '🌧',
+    '🥰',
+    '😭',
+    '😊',
+    '🌙',
+    '⭐️',
+    '😢',
+    '🔥',
+  ];
 
   final List<VisualElement> _elements = [];
   final ImagePicker _picker = ImagePicker();
@@ -42,6 +53,7 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
   String _moodEmoji = '☀️';
   bool _showEmojiBar = false;
   DateTime _entryDate = DateTime.now();
+
   /// While true, canvas scroll is disabled so image frame drags are not stolen by [SingleChildScrollView].
   bool _lockCanvasScroll = false;
 
@@ -75,8 +87,8 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
 
   VisualElement? get _selected =>
       _selectedIndex != null && _selectedIndex! < _elements.length
-          ? _elements[_selectedIndex!]
-          : null;
+      ? _elements[_selectedIndex!]
+      : null;
 
   bool get _selectedIsText => _selected?.type == ElementType.text;
   QuillController? get _quill => _selected?.quillController;
@@ -189,16 +201,21 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
     _attachFocusListener(index, focus);
 
     setState(() {
-      _elements.add(VisualElement(
-        position: Offset(20, _elements.isEmpty ? 20 : 90 + _elements.length * 28),
-        type: ElementType.text,
-        width: 300,
-        height: 120,
-        isHeader: _elements.isEmpty,
-        quillController: c,
-        focusNode: focus,
-        scrollController: scroll,
-      ));
+      _elements.add(
+        VisualElement(
+          position: Offset(
+            20,
+            _elements.isEmpty ? 20 : 90 + _elements.length * 28,
+          ),
+          type: ElementType.text,
+          width: 300,
+          height: 120,
+          isHeader: _elements.isEmpty,
+          quillController: c,
+          focusNode: focus,
+          scrollController: scroll,
+        ),
+      );
       _selectedIndex = index;
       _editingIndex = index;
     });
@@ -209,49 +226,47 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
     final img = await _picker.pickImage(source: ImageSource.gallery);
     if (img == null) return;
     setState(() {
-      _elements.add(VisualElement(
-        position: Offset(30, _elements.isEmpty ? 20 : 110),
-        type: ElementType.image,
-        content: img.path,
-        width: 220,
-        height: 180,
-        isHeader: _elements.isEmpty,
-      ));
+      _elements.add(
+        VisualElement(
+          position: Offset(30, _elements.isEmpty ? 20 : 110),
+          type: ElementType.image,
+          content: img.path,
+          width: 220,
+          height: 180,
+          isHeader: _elements.isEmpty,
+        ),
+      );
       _selectedIndex = _elements.length - 1;
     });
-  }
-
-  void _applySize(String key) {
-    final c = _quill;
-    if (c == null) return;
-    c.formatSelection(switch (key) {
-      'small' => const SizeAttribute('small'),
-      'medium' => const SizeAttribute('medium'),
-      _ => const SizeAttribute('large'),
-    });
-    setState(() {});
   }
 
   void _toggleBold() {
     final c = _quill;
     if (c == null) return;
     final on = c.getSelectionStyle().attributes.containsKey(Attribute.bold.key);
-    c.formatSelection(on ? Attribute.clone(Attribute.bold, null) : Attribute.bold);
+    c.formatSelection(
+      on ? Attribute.clone(Attribute.bold, null) : Attribute.bold,
+    );
     setState(() {});
   }
 
   void _toggleItalic() {
     final c = _quill;
     if (c == null) return;
-    final on = c.getSelectionStyle().attributes.containsKey(Attribute.italic.key);
-    c.formatSelection(on ? Attribute.clone(Attribute.italic, null) : Attribute.italic);
+    final on = c.getSelectionStyle().attributes.containsKey(
+      Attribute.italic.key,
+    );
+    c.formatSelection(
+      on ? Attribute.clone(Attribute.italic, null) : Attribute.italic,
+    );
     setState(() {});
   }
 
   void _applyColor(Color color) {
     final c = _quill;
     if (c == null) return;
-    final hex = '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
+    final hex =
+        '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
     c.formatSelection(ColorAttribute(hex));
     setState(() {});
   }
@@ -264,18 +279,22 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
   bool _hasAttr(Attribute a) =>
       _quill?.getSelectionStyle().attributes.containsKey(a.key) ?? false;
 
-  String _sizeLabel() {
-    final s = _quill?.getSelectionStyle().attributes[Attribute.size.key]?.value;
-    return switch (s) {
-      'small' => 'Small',
-      'large' => 'Large',
-      _ => 'Medium',
-    };
-  }
-
   String _headerLine() {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${months[_entryDate.month - 1]} ${_entryDate.day}  |  ${days[_entryDate.weekday - 1]}  |  $_moodEmoji  |  22°C';
   }
 
@@ -299,6 +318,10 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
         );
       },
     );
+
+    // FIX: Guard buildcontext usage across async split gap
+    if (!context.mounted) return;
+
     if (picked != null) {
       setState(() {
         _entryDate = DateTime(
@@ -318,7 +341,9 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Canvas Empty'),
-          content: const Text('Your diary entry is empty. Please add some text or an image before saving.'),
+          content: const Text(
+            'Your diary entry is empty. Please add some text or an image before saving.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -329,7 +354,7 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
       );
       return;
     }
-    
+
     _persistCanvasImageState();
     final provider = context.read<DiaryProvider>();
     if (widget.editEntry != null) {
@@ -339,6 +364,8 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
         moodEmoji: _moodEmoji,
         entryDate: _entryDate,
       );
+
+      // FIX: Guard context usage across async split gap
       if (!context.mounted) return;
       Navigator.pop(context);
       Navigator.pop(context);
@@ -348,6 +375,8 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
         moodEmoji: _moodEmoji,
         entryDate: _entryDate,
       );
+
+      // FIX: Guard context usage across async split gap
       if (!context.mounted) return;
       Navigator.pop(context);
     }
@@ -433,7 +462,11 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey.shade500),
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 14,
+              color: Colors.grey.shade500,
+            ),
           ],
         ),
       ),
@@ -461,7 +494,9 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
               decoration: BoxDecoration(
                 color: sel ? Colors.white : Colors.transparent,
                 shape: BoxShape.circle,
-                border: sel ? Border.all(color: _accent.withValues(alpha: 0.4)) : null,
+                border: sel
+                    ? Border.all(color: _accent.withValues(alpha: 0.4))
+                    : null,
               ),
               child: Text(e, style: const TextStyle(fontSize: 20)),
             ),
@@ -471,7 +506,6 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
     );
   }
 
-  /// Date banner + canvas share one scroll viewport so text never overlaps the header.
   Widget _unifiedScrollContent(BuildContext context) {
     final canvasW = _canvasWidth(context);
     final canvasH = _canvasHeight(context);
@@ -506,7 +540,9 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
                         ),
                       ),
                     ),
-                  ..._elements.asMap().entries.map((e) => _element(e.key, e.value)),
+                  ..._elements.asMap().entries.map(
+                    (e) => _element(e.key, e.value),
+                  ),
                 ],
               ),
             ),
@@ -535,10 +571,7 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
           children: [
             _dragEdge(index, el),
             _body(el, selected, editing),
-            if (selected) ...[
-              _deleteBtn(index),
-              _resizeHandle(el),
-            ],
+            if (selected) ...[_deleteBtn(index), _resizeHandle(el)],
           ],
         ),
       ),
@@ -568,16 +601,8 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
           clipBehavior: Clip.none,
           children: [
             _imageCanvasBody(el, selected: selected),
-            Positioned(
-              top: -8,
-              left: -8,
-              child: _imageZoomControls(el),
-            ),
-            Positioned(
-              top: -8,
-              right: -8,
-              child: _imageDeleteControl(index),
-            ),
+            Positioned(top: -8, left: -8, child: _imageZoomControls(el)),
+            Positioned(top: -8, right: -8, child: _imageDeleteControl(index)),
             if (selected) _resizeHandle(el),
           ],
         ),
@@ -586,58 +611,56 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
   }
 
   Widget _imageZoomControls(VisualElement el) => Material(
-        color: Colors.white,
-        elevation: 2,
-        borderRadius: BorderRadius.circular(20),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.remove, size: 18),
-              padding: const EdgeInsets.all(6),
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-              onPressed: () => _zoomImage(el, -0.15),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add, size: 18),
-              padding: const EdgeInsets.all(6),
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-              onPressed: () => _zoomImage(el, 0.15),
-            ),
-          ],
+    color: Colors.white,
+    elevation: 2,
+    borderRadius: BorderRadius.circular(20),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.remove, size: 18),
+          padding: const EdgeInsets.all(6),
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          onPressed: () => _zoomImage(el, -0.15),
         ),
-      );
+        IconButton(
+          icon: const Icon(Icons.add, size: 18),
+          padding: const EdgeInsets.all(6),
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          onPressed: () => _zoomImage(el, 0.15),
+        ),
+      ],
+    ),
+  );
 
   Widget _imageDeleteControl(int index) => Material(
-        color: const Color(0xFF424242),
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: () => _deleteAt(index),
-          child: const Padding(
-            padding: EdgeInsets.all(6),
-            child: Icon(Icons.delete_outline, size: 18, color: Colors.white),
-          ),
-        ),
-      );
+    color: const Color(0xFF424242),
+    shape: const CircleBorder(),
+    child: InkWell(
+      customBorder: const CircleBorder(),
+      onTap: () => _deleteAt(index),
+      child: const Padding(
+        padding: EdgeInsets.all(6),
+        child: Icon(Icons.delete_outline, size: 18, color: Colors.white),
+      ),
+    ),
+  );
 
-  /// Left-edge drag rail — always receives pan, even while typing in Quill.
   Widget _dragEdge(
     int index,
     VisualElement el, {
     void Function(DragUpdateDetails details)? onPan,
-  }) =>
-      Positioned(
-        left: 0,
-        top: 0,
-        bottom: 0,
-        width: 16,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onPanUpdate: onPan ?? (d) => _moveElement(el, index, d),
-          child: const ColoredBox(color: Colors.transparent),
-        ),
-      );
+  }) => Positioned(
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 16,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onPanUpdate: onPan ?? (d) => _moveElement(el, index, d),
+      child: const ColoredBox(color: Colors.transparent),
+    ),
+  );
 
   Widget _body(VisualElement el, bool selected, bool editing) {
     final isText = el.type == ElementType.text;
@@ -693,9 +716,9 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
 
   Widget _quillBox(VisualElement el) {
     final placeholder = el.isHeader ? _headerPlaceholder : 'Write here…';
-    final style = JournalCanvasView.journalTextStyle(isHeader: el.isHeader).copyWith(
-      fontFamilyFallback: CanvasElementFactory.emojiFallback,
-    );
+    final style = JournalCanvasView.journalTextStyle(
+      isHeader: el.isHeader,
+    ).copyWith(fontFamilyFallback: CanvasElementFactory.emojiFallback);
     return Padding(
       padding: const EdgeInsets.only(left: 12),
       child: QuillEditor(
@@ -722,57 +745,70 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
   }
 
   Widget _img(String path, double w, double h) {
-    if (kIsWeb) return Image.network(path, width: w, height: h, fit: BoxFit.cover);
+    if (kIsWeb) {
+      return Image.network(path, width: w, height: h, fit: BoxFit.cover);
+    }
     return Image.file(File(path), width: w, height: h, fit: BoxFit.cover);
   }
 
   Widget _deleteBtn(int index) => Positioned(
-        top: -10,
-        right: -10,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => _deleteAt(index),
-          child: Container(
-            width: 28,
-            height: 28,
-            decoration: const BoxDecoration(color: Color(0xFF424242), shape: BoxShape.circle),
-            child: const Icon(Icons.delete_outline, size: 16, color: Colors.white),
-          ),
+    top: -10,
+    right: -10,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _deleteAt(index),
+      child: Container(
+        width: 28,
+        height: 28,
+        decoration: const BoxDecoration(
+          color: Color(0xFF424242),
+          shape: BoxShape.circle,
         ),
-      );
+        child: const Icon(Icons.delete_outline, size: 16, color: Colors.white),
+      ),
+    ),
+  );
 
   Widget _resizeHandle(VisualElement el) => Positioned(
-        right: -14,
-        bottom: -14,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onPanUpdate: (d) => setState(() {
-            el.width = math.max(_minElementSize, el.width + d.delta.dx);
-            el.height = math.max(_minElementSize, el.height + d.delta.dy);
-          }),
-          child: Container(
-            width: 36,
-            height: 36,
-            alignment: Alignment.center,
-            child: Container(
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: _accent,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 4)],
+    right: -14,
+    bottom: -14,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onPanUpdate: (d) => setState(() {
+        el.width = math.max(_minElementSize, el.width + d.delta.dx);
+        el.height = math.max(_minElementSize, el.height + d.delta.dy);
+      }),
+      child: Container(
+        width: 36,
+        height: 36,
+        alignment: Alignment.center,
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: _accent,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 4,
               ),
-              child: const Icon(Icons.open_in_full, size: 14, color: Colors.white),
-            ),
+            ],
           ),
+          child: const Icon(Icons.open_in_full, size: 14, color: Colors.white),
         ),
-      );
-
+      ),
+    ),
+  );
   Widget _toolbar() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, -2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
         ],
       ),
       child: SafeArea(
@@ -786,8 +822,18 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _tb(Icons.format_bold, 'Bold', _hasAttr(Attribute.bold), _toggleBold),
-                    _tb(Icons.format_italic, 'Italic', _hasAttr(Attribute.italic), _toggleItalic),
+                    _tb(
+                      Icons.format_bold,
+                      'Bold',
+                      _hasAttr(Attribute.bold),
+                      _toggleBold,
+                    ),
+                    _tb(
+                      Icons.format_italic,
+                      'Italic',
+                      _hasAttr(Attribute.italic),
+                      _toggleItalic,
+                    ),
                     _tb(Icons.palette_outlined, 'Color', false, _openPalette),
                   ],
                 ),
@@ -816,32 +862,40 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
   }
 
   Widget _tb(IconData icon, String label, bool on, VoidCallback tap) => InkWell(
-        onTap: tap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 22, color: on ? _accent : Colors.grey.shade800),
-              Text(label, style: TextStyle(fontSize: 10, color: on ? _accent : Colors.grey.shade600)),
-            ],
+    onTap: tap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 22, color: on ? _accent : Colors.grey.shade800),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: on ? _accent : Colors.grey.shade600,
+            ),
           ),
-        ),
-      );
-
+        ],
+      ),
+    ),
+  );
 
   Widget _chip(IconData icon, String label, VoidCallback onTap) => InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20, color: Colors.grey.shade800),
-              const SizedBox(width: 6),
-              Text(label, style: TextStyle(fontSize: 13, color: Colors.grey.shade800)),
-            ],
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 20, color: Colors.grey.shade800),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }

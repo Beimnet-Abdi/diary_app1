@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'auth_screen.dart';
+// FIX: Changed import from the deleted auth_screen.dart to your dashboard screen
+import 'dashboard.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -39,9 +40,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             onPressed: () {
               if (_index == 1) {
+                // FIX: Route straight to Dashboard instead of AuthScreen
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AuthScreen()),
+                  MaterialPageRoute(builder: (_) => const Dashboard()),
                 );
               } else {
                 _controller.nextPage(
